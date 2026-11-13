@@ -45,3 +45,4 @@ Sistema de reservas para una peluquería: web informativa con reserva online y p
 - Misma web: lo público en / y /reservar; el panel en /panel, con login individual (Supabase Auth) para cada persona de la tabla personal. Sin sesión → redirige a /panel/entrar.
 - Doble barrera: comprobar la sesión en el servidor + seguridad por filas en la base de datos. La parte pública solo recibe horas libres, nunca datos de otros clientes.
 - Guía de estilo: docs/referencia/demo-reservas.html (solo el aspecto; textos y datos salen de la base de datos, y las fuentes se cargan con next/font).
+- Cada page.tsx nueva del panel lleva su propio loading.tsx en la misma carpeta (si está en la carpeta de arriba, Next.js vuelve a avisar).
