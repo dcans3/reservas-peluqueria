@@ -115,6 +115,14 @@ as $$
   select exists (select 1 from public.personal where user_id = auth.uid());
 $$;
 
+create or replace function es_admin() returns boolean
+language sql stable security definer set search_path = public
+as $$
+  select exists (
+    select 1 from public.personal where user_id = auth.uid() and rol = 'admin'
+  );
+$$;
+
 -- 4) Seguridad (RLS): desde el navegador solo entra el personal logueado.
 --    La web pública NO toca la base de datos desde el navegador: pasa por el servidor (API).
 alter table negocio               enable row level security;
@@ -127,12 +135,47 @@ alter table clientes              enable row level security;
 alter table citas                 enable row level security;
 alter table personal              enable row level security;
 
-create policy "solo personal" on negocio               for all to authenticated using (es_personal()) with check (es_personal());
-create policy "solo personal" on profesionales         for all to authenticated using (es_personal()) with check (es_personal());
-create policy "solo personal" on servicios             for all to authenticated using (es_personal()) with check (es_personal());
-create policy "solo personal" on profesional_servicios for all to authenticated using (es_personal()) with check (es_personal());
-create policy "solo personal" on horarios              for all to authenticated using (es_personal()) with check (es_personal());
-create policy "solo personal" on ausencias             for all to authenticated using (es_personal()) with check (es_personal());
+-- Ajustes: todo el personal los LEE (los necesita la agenda), pero solo el
+-- rol 'admin' puede crear, cambiar o borrar.
+-- (Migración: supabase/migraciones/2026-11-13-solo-admin-ajustes.sql)
+
+-- negocio
+create policy "personal lee"  on negocio for select to authenticated using (es_personal());
+create policy "admin crea"    on negocio for insert to authenticated with check (es_admin());
+create policy "admin cambia"  on negocio for update to authenticated using (es_admin()) with check (es_admin());
+create policy "admin borra"   on negocio for delete to authenticated using (es_admin());
+
+-- servicios
+create policy "personal lee"  on servicios for select to authenticated using (es_personal());
+create policy "admin crea"    on servicios for insert to authenticated with check (es_admin());
+create policy "admin cambia"  on servicios for update to authenticated using (es_admin()) with check (es_admin());
+create policy "admin borra"   on servicios for delete to authenticated using (es_admin());
+
+-- profesionales
+create policy "personal lee"  on profesionales for select to authenticated using (es_personal());
+create policy "admin crea"    on profesionales for insert to authenticated with check (es_admin());
+create policy "admin cambia"  on profesionales for update to authenticated using (es_admin()) with check (es_admin());
+create policy "admin borra"   on profesionales for delete to authenticated using (es_admin());
+
+-- profesional_servicios
+create policy "personal lee"  on profesional_servicios for select to authenticated using (es_personal());
+create policy "admin crea"    on profesional_servicios for insert to authenticated with check (es_admin());
+create policy "admin cambia"  on profesional_servicios for update to authenticated using (es_admin()) with check (es_admin());
+create policy "admin borra"   on profesional_servicios for delete to authenticated using (es_admin());
+
+-- horarios
+create policy "personal lee"  on horarios for select to authenticated using (es_personal());
+create policy "admin crea"    on horarios for insert to authenticated with check (es_admin());
+create policy "admin cambia"  on horarios for update to authenticated using (es_admin()) with check (es_admin());
+create policy "admin borra"   on horarios for delete to authenticated using (es_admin());
+
+-- ausencias
+create policy "personal lee"  on ausencias for select to authenticated using (es_personal());
+create policy "admin crea"    on ausencias for insert to authenticated with check (es_admin());
+create policy "admin cambia"  on ausencias for update to authenticated using (es_admin()) with check (es_admin());
+create policy "admin borra"   on ausencias for delete to authenticated using (es_admin());
+
+-- Agenda: todo el personal (también los profesionales) trabaja con citas y clientes.
 create policy "solo personal" on clientes              for all to authenticated using (es_personal()) with check (es_personal());
 create policy "solo personal" on citas                 for all to authenticated using (es_personal()) with check (es_personal());
 create policy "ver mi ficha"  on personal              for select to authenticated using (user_id = auth.uid());

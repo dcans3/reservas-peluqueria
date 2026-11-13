@@ -1,14 +1,8 @@
-// /panel/ajustes: vacía por ahora.
+// /panel/ajustes sin pestaña → la primera, Negocio.
+// (El layout de ajustes ya ha comprobado que es admin.)
 
-import { exigirPersonal } from "@/lib/supabase/sesion";
+import { redirect } from "next/navigation";
 
-export default async function PaginaAjustes() {
-  await exigirPersonal();
-
-  return (
-    <section className="rounded-2xl border border-renglon bg-hoja p-5 sm:p-8">
-      <h1 className="rotulo text-5xl sm:text-6xl">Ajustes</h1>
-      <p className="mt-4 text-tinta-suave">Próximamente.</p>
-    </section>
-  );
+export default function PaginaAjustes() {
+  redirect("/panel/ajustes/negocio");
 }

@@ -8,7 +8,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense, type ReactNode } from "react";
-import { exigirPersonal } from "@/lib/supabase/sesion";
+import { comprobarAcceso, exigirPersonal } from "@/lib/supabase/sesion";
 import { salir } from "../acciones";
 
 export const metadata: Metadata = {
@@ -40,6 +40,22 @@ async function ConAcceso({ children }: { children: ReactNode }) {
   return children;
 }
 
+/**
+ * Enlace a Ajustes, solo para el rol 'admin'. Esconderlo es solo comodidad:
+ * la seguridad de verdad está en exigirAdmin() (páginas), en cada Server
+ * Action y en la base de datos (es_admin).
+ */
+async function EnlaceAjustes({ className }: { className: string }) {
+  const acceso = await comprobarAcceso();
+  if (acceso.estado !== "ok" || acceso.persona.rol !== "admin") return null;
+
+  return (
+    <Link href="/panel/ajustes" className={className}>
+      Ajustes
+    </Link>
+  );
+}
+
 function Cabecera() {
   const enlace =
     "rounded-lg px-3 py-2 font-bold hover:bg-verde-claro";
@@ -55,9 +71,10 @@ function Cabecera() {
         <Link href="/panel" className={enlace}>
           Agenda
         </Link>
-        <Link href="/panel/ajustes" className={enlace}>
-          Ajustes
-        </Link>
+        {/* Solo para admin. Lee la sesión, así que va dentro de <Suspense>. */}
+        <Suspense fallback={null}>
+          <EnlaceAjustes className={enlace} />
+        </Suspense>
 
         <form action={salir}>
           <button

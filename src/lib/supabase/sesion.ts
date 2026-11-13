@@ -14,6 +14,7 @@ import "server-only";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { connection } from "next/server";
 import { cache } from "react";
 import { clavesPublicasSupabase } from "./claves";
 
@@ -59,6 +60,11 @@ export type Acceso =
  * cache() no guarda nada: se comprueba de nuevo en cada llamada.
  */
 export const comprobarAcceso = cache(async (): Promise<Acceso> => {
+  // Le dice a Next.js que esto depende de la petición y no se puede preparar
+  // por adelantado. Sin esto, Supabase mira la hora (Date.now(), para ver si
+  // la sesión ha caducado) y Next.js avisa con "blocking-prerender-current-time".
+  await connection();
+
   const supabase = await crearClienteServidor();
 
   const { data } = await supabase.auth.getClaims();
@@ -95,4 +101,16 @@ export async function exigirPersonal(): Promise<Persona> {
   if (acceso.estado === "sin-acceso") redirect("/panel/salir");
 
   return acceso.persona;
+}
+
+/**
+ * Para las PÁGINAS de ajustes: como exigirPersonal(), pero además exige el
+ * rol 'admin'. Un 'profesional' vuelve a /panel.
+ * En las Server Actions no se usa: allí se comprueba persona.rol y se
+ * devuelve un mensaje ("No tienes permiso..."), en vez de cambiar de página.
+ */
+export async function exigirAdmin(): Promise<Persona> {
+  const persona = await exigirPersonal();
+  if (persona.rol !== "admin") redirect("/panel");
+  return persona;
 }
