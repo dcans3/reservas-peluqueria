@@ -1,26 +1,71 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Colores de la guía de estilo (docs/referencia/demo-reservas.html).
+   Idea: la web sustituye a la libreta del barbero: papel pautado, tinta,
+   verde de fachada y latón.
+   Cada color crea sus clases de Tailwind: bg-papel, text-tinta, border-renglon... */
+@theme {
+  --color-papel: #edf1ec; /* fondo de la página */
+  --color-hoja: #fafbf8; /* tarjetas y campos */
+  --color-tinta: #17221d; /* texto */
+  --color-tinta-suave: #4e5d55; /* texto secundario */
+  --color-verde: #1f4a3a; /* botones y elementos principales */
+  --color-verde-claro: #d9e6de;
+  --color-laton: #a97b22; /* detalles y foco del teclado */
+  --color-renglon: #cbd6ce; /* bordes y líneas */
+  --color-rojo: #a8261e; /* errores */
+  --color-rojo-claro: #f6e1de;
 }
 
+/* Fuentes: las carga next/font en src/app/layout.tsx y las deja en estas
+   variables. "inline" porque dependen de variables que pone next/font. */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-atkinson), system-ui, sans-serif; /* texto */
+  --font-rotulo: var(--font-big-shoulders), "Arial Narrow", sans-serif; /* títulos */
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* Clase para los títulos grandes ("rótulos"), como en la demo.
+   Big Shoulders lleva el tamaño óptico en la misma fuente: 72 es su versión
+   "Display", la de letra alta y estrecha. */
+@utility rotulo {
+  font-family: var(--font-rotulo);
+  font-weight: 800;
+  line-height: 0.95;
+  letter-spacing: 0.01em;
+  font-variation-settings: "opsz" 72;
+}
+
+@layer base {
+  html {
+    color-scheme: light;
   }
-}
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  body {
+    background-color: var(--color-papel);
+    color: var(--color-tinta);
+    line-height: 1.5;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  /* Foco visible al navegar con teclado */
+  :focus-visible {
+    outline: 3px solid var(--color-laton);
+    outline-offset: 2px;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
 }

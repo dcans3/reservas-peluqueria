@@ -38,7 +38,7 @@ Sistema de reservas para una peluquería: web informativa con reserva online y p
 
 ## Variables de entorno (.env.local, nunca en GitHub)
 - `NEXT_PUBLIC_SUPABASE_URL`: URL del proyecto de Supabase
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`: clave pública de Supabase
+- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`: clave pública de Supabase ("publishable key", antes llamada "anon key")
 - `SUPABASE_SERVICE_ROLE_KEY`: clave secreta de Supabase (solo servidor)
 
 ## Panel del negocio y estilo
