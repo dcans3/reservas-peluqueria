@@ -207,6 +207,26 @@ describe("calcularHuecos", () => {
 
     expect(calcularHuecos({ ...base, fecha: "2027-01-30" })).toEqual([]);
   });
+
+  it("10. Con minutos_por_hueco = 0 (o duración 0) lanza un error en vez de colgarse", () => {
+    const base = {
+      fecha: "2026-12-01",
+      duracionMin: 45,
+      reglas,
+      ahora: AHORA,
+      horarios: horariosLaura,
+      ausencias: [],
+      citas: [],
+    };
+
+    expect(() =>
+      calcularHuecos({ ...base, reglas: { ...reglas, minutos_por_hueco: 0 } })
+    ).toThrow("minutos_por_hueco debe ser mayor que 0");
+
+    expect(() => calcularHuecos({ ...base, duracionMin: 0 })).toThrow(
+      "duracionMin debe ser mayor que 0"
+    );
+  });
 });
 
 describe("sin preferencia", () => {

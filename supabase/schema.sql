@@ -16,7 +16,11 @@ create table negocio (
   minutos_por_hueco int not null default 15,       -- cada cuánto se ofrecen horas: 10:00, 10:15...
   antelacion_minima_min int not null default 120,  -- no se puede reservar con menos de 2 h
   dias_maximos_reserva int not null default 60,    -- no se puede reservar a más de 60 días
-  horas_limite_cancelar int not null default 24    -- el cliente cancela online hasta 24 h antes
+  horas_limite_cancelar int not null default 24,   -- el cliente cancela online hasta 24 h antes
+  check (minutos_por_hueco > 0),
+  check (antelacion_minima_min >= 0),
+  check (dias_maximos_reserva > 0),
+  check (horas_limite_cancelar >= 0)
 );
 
 create table profesionales (

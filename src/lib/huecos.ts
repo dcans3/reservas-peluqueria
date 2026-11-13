@@ -71,6 +71,17 @@ export function calcularHuecos(datos: DatosHuecos): Date[] {
     datos;
   const zona = reglas.zona_horaria;
 
+  // Valores imposibles: con minutos_por_hueco = 0 el bucle de abajo no
+  // terminaría nunca y colgaría el servidor. Mejor fallar con un error claro.
+  if (reglas.minutos_por_hueco <= 0) {
+    throw new Error(
+      `minutos_por_hueco debe ser mayor que 0 (vale ${reglas.minutos_por_hueco})`
+    );
+  }
+  if (duracionMin <= 0) {
+    throw new Error(`duracionMin debe ser mayor que 0 (vale ${duracionMin})`);
+  }
+
   const dia = DateTime.fromISO(fecha, { zone: zona });
   if (!dia.isValid) {
     throw new Error(`Fecha no válida: ${fecha}`);
