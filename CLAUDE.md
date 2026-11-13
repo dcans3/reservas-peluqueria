@@ -40,3 +40,8 @@ Sistema de reservas para una peluquería: web informativa con reserva online y p
 - `NEXT_PUBLIC_SUPABASE_URL`: URL del proyecto de Supabase
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`: clave pública de Supabase
 - `SUPABASE_SERVICE_ROLE_KEY`: clave secreta de Supabase (solo servidor)
+
+## Panel del negocio y estilo
+- Misma web: lo público en / y /reservar; el panel en /panel, con login individual (Supabase Auth) para cada persona de la tabla personal. Sin sesión → redirige a /panel/entrar.
+- Doble barrera: comprobar la sesión en el servidor + seguridad por filas en la base de datos. La parte pública solo recibe horas libres, nunca datos de otros clientes.
+- Guía de estilo: docs/referencia/demo-reservas.html (solo el aspecto; textos y datos salen de la base de datos, y las fuentes se cargan con next/font).
